@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Portal — ACCESS Marketplace</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .portal-scene {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scene-orb-1 {
+      position: absolute;
+      width: 600px; height: 600px;
+      top: -100px; right: -150px;
+      background: radial-gradient(circle, rgba(76,29,149,0.25) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .scene-orb-2 {
+      position: absolute;
+      width: 400px; height: 400px;
+      bottom: 0; left: -80px;
+      background: radial-gradient(circle, rgba(217,70,239,0.10) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+
+    .portal-wrap {
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── Portal Card ── */
+    .portal-card {
+      position: relative;
+      background: rgba(12,8,32,0.75);
+      border: 1px solid var(--border-1);
+      border-radius: var(--r-xl);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
+      padding: 48px;
+      overflow: hidden;
+      box-shadow:
+        inset 0 1px 0 rgba(196,181,253,0.10),
+        0 24px 80px rgba(0,0,0,0.50),
+        0 0 0 1px rgba(109,40,217,0.08);
+    }
+
+    /* Top gradient line */
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 5%, var(--p-400) 35%, var(--pk-400) 65%, transparent 95%);
+    }
+
+    /* Corner accent */
+    .portal-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle at top right, rgba(217,70,239,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .portal-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .portal-logomark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-100);
+      margin-bottom: 6px;
+    }
+
+    .portal-logomark .dot { color: var(--pk-300); text-shadow: 0 0 14px var(--pk-glow); }
+
+    .portal-header p { font-size: 13px; color: var(--text-400); letter-spacing: 0.04em; }
+
+    /* ── Tab Toggle ── */
+    .tab-row {
+      display: flex;
+      background: rgba(0,0,0,0.30);
+      border: 1px solid var(--border-0);
+      border-radius: var(--r-md);
+      padding: 4px;
+      margin-bottom: 36px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 6px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-400);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--p-500), var(--p-700));
+      color: white;
+      box-shadow: 0 2px 14px rgba(109,40,217,0.40), inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 20px; }
+
+    .form-actions { margin-top: 8px; display:flex; flex-direction:column; gap: 12px; }
+
+    .form-note { text-align: center; font-size: 12px; color: var(--text-400); line-height: 1.6; }
+    .form-note a { color: var(--p-200); text-decoration: none; }
+    .form-note a:hover { color: var(--pk-300); text-decoration: underline; }
+
+    /* ── Features below card ── */
+    .portal-features {
+      margin-top: 20px;
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .pf-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-300);
+    }
+
+    .pf-row .ico {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(109,40,217,0.12);
+      border: 1px solid rgba(139,92,246,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+
+    .sec-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-400);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Dashboard ── */
+    .dash-view {
+      display: none;
+      width: 100%;
+      max-width: 1040px;
+    }
+
+    .dash-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+
+    .dash-top h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text-100);
+    }
+
+    .dash-top p { font-size: 13px; color: var(--text-400); margin-top: 4px; }
+
+    .dash-badge {
+      padding: 7px 18px;
+      background: rgba(109,40,217,0.15);
+      border: 1px solid rgba(139,92,246,0.28);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--p-100);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 20px;
+    }
+
+    .dash-card { padding: 28px 32px; }
+
+    .dash-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-400);
+      margin-bottom: 22px;
+    }
+
+    .prog-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .prog-header span:first-child { font-size: 13.5px; color: var(--text-200); }
+    .prog-header span:last-child { font-size: 13.5px; font-weight: 700; background: linear-gradient(135deg, var(--p-100), var(--pk-300)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .prog-track {
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--p-500), var(--p-300), var(--pk-400));
+      box-shadow: 0 0 12px rgba(139,92,246,0.4);
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    .rounds-row { display: flex; gap: 10px; }
+
+    .round-pill {
+      flex: 1;
+      padding: 12px 8px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .round-pill.done {
+      background: rgba(109,40,217,0.18);
+      border: 1px solid rgba(139,92,246,0.30);
+      color: var(--p-100);
+    }
+
+    .round-pill.active {
+      background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(217,70,239,0.12));
+      border: 1px solid rgba(217,70,239,0.35);
+      color: var(--pk-100);
+    }
+
+    .round-pill.pending {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-0);
+      color: var(--text-400);
+    }
+
+    .update-block {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-0);
+    }
+
+    .update-block p:first-child { font-size: 11px; color: var(--text-400); margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .update-block p:last-child { font-size: 13.5px; color: var(--text-200); line-height: 1.75; }
+
+    .action-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .action-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--glass-1);
+      border: 1px solid var(--border-0);
+      border-radius: var(--r-md);
+      color: var(--text-200);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.22s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .action-link:hover {
+      background: var(--glass-2);
+      border-color: var(--border-2);
+      color: var(--p-100);
+      transform: translateX(4px);
+    }
+
+    .case-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(196,181,253,0.05);
+      font-size: 13px;
+    }
+
+    .case-row:last-child { border-bottom: none; }
+    .case-row .label { color: var(--text-400); }
+
+    .sign-out {
+      background: transparent;
+      border: 1px solid var(--border-1);
+      color: var(--text-400);
+      padding: 9px 20px;
+      border-radius: var(--r-sm);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sign-out:hover { border-color: var(--border-2); color: var(--p-100); }
+
+    /* Success state */
+    .success-state { display:none; text-align:center; padding: 40px 0; }
+    .success-state .big { font-size: 52px; margin-bottom: 16px; }
+    .success-state h4 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 10px; }
+    .success-state p { color: var(--text-200); font-size: 14px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ACCESS<span class="dot">·</span>MKT</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="education.html">Resources</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="portal.html" class="nav-portal active">Client Portal &rarr;</a></li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+<div class="portal-scene">
+  <div class="scene-orb-1"></div>
+  <div class="scene-orb-2"></div>
+
+  <!-- AUTH PANEL -->
+  <div class="portal-wrap anim" id="auth-panel">
+    <div class="portal-card">
+      <div class="portal-header">
+        <div class="portal-logomark">ACCESS<span class="dot">·</span>MKT</div>
+        <p>Secure Client Portal</p>
+      </div>
+
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('signup')">Register</button>
+        <button class="tab-btn" onclick="switchTab('consult')">Book Consult</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form id="login-form" onsubmit="showDash(event)">
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input type="password" class="field" placeholder="••••••••••••" required/>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Sign In to Portal</button>
+          <p class="form-note"><a href="#">Forgot your password?</a></p>
+        </div>
+      </form>
+
+      <!-- REGISTER -->
+      <form id="signup-form" style="display:none" onsubmit="showDash(event)">
+        <div class="form-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" class="field" placeholder="Jane Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Phone Number</label>
+          <input type="tel" class="field" placeholder="(555) 000-0000"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Create Password</label>
+          <input type="password" class="field" placeholder="Create a secure password" required/>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Create My Account</button>
+          <p class="form-note">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+        </div>
+      </form>
+
+      <!-- BOOK CONSULT -->
+      <form id="consult-form" style="display:none" onsubmit="showDash(event)">
+        <div class="form-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" class="field" placeholder="Jane Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Preferred Date</label>
+          <input type="date" class="field"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Estimated Trade Lines</label>
+          <select class="field">
+            <option value="">Select a range...</option>
+            <option>1–5 trade lines ($500)</option>
+            <option>6–10 trade lines ($1,000)</option>
+            <option>10–15 trade lines ($1,500)</option>
+            <option>16–20 trade lines ($2,000)</option>
+            <option>21+ trade lines ($2,500)</option>
+            <option>I'm not sure</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-accent">Book Consultation — $100</button>
+          <p class="form-note">Consultation fee is non-refundable but credited toward your service agreement.</p>
+        </div>
+      </form>
+
+    </div>
+
+    <div class="glass static portal-features anim anim-2">
+      <div class="pf-row"><div class="ico">🔒</div> Encrypted document upload</div>
+      <div class="pf-row"><div class="ico">📊</div> Real-time status board</div>
+      <div class="pf-row"><div class="ico">💬</div> Direct team messaging</div>
+      <div class="pf-row"><div class="ico">📥</div> Download expert reports</div>
+    </div>
+
+    <div class="sec-badge">
+      🔒 256-bit SSL &nbsp;·&nbsp; PCI-DSS Compliant &nbsp;·&nbsp; Encrypted Storage
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div class="dash-view anim" id="dash-panel">
+    <div class="dash-top">
+      <div>
+        <h2>Welcome back, Jane</h2>
+        <p>Client ID #ACX-2847 &nbsp;·&nbsp; Package: 10–15 Trade Lines ($1,500)</p>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="dash-badge"><span class="badge-dot"></span> Round 2 In Progress</div>
+        <button class="sign-out" onclick="showAuth()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <!-- LEFT: Progress -->
+      <div class="glass dash-card">
+        <div class="dash-label">Dispute Progress</div>
+        <div class="prog-header">
+          <span>Overall Completion</span>
+          <span>50%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:50%"></div></div>
+        <div class="rounds-row">
+          <div class="round-pill done">Round 1<br/>✓ Complete</div>
+          <div class="round-pill active">Round 2<br/>⚡ Active</div>
+          <div class="round-pill pending">Round 3<br/>Upcoming</div>
+          <div class="round-pill pending">Round 4<br/>Upcoming</div>
+        </div>
+        <div class="update-block">
+          <p>Latest Update — March 1, 2025</p>
+          <p>Round 2 dispute letters have been submitted to Equifax, Experian, and TransUnion. Bureau response expected within 30–45 days. We'll notify you of any responses via the portal.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Actions + Summary -->
+      <div style="display:flex; flex-direction:column; gap: 18px;">
+        <div class="glass dash-card">
+          <div class="dash-label">Quick Actions</div>
+          <div class="action-list">
+            <a href="#" class="action-link">📤 Upload Document</a>
+            <a href="#" class="action-link">📥 Download Reports</a>
+            <a href="#" class="action-link">💬 Message Team</a>
+            <a href="#" class="action-link">📅 Schedule Call</a>
+          </div>
+        </div>
+
+        <div class="glass dash-card">
+          <div class="dash-label">Case Summary</div>
+          <div class="case-row"><span class="label">Trade Lines</span><strong>12</strong></div>
+          <div class="case-row"><span class="label">Disputes Submitted</span><strong>24</strong></div>
+          <div class="case-row"><span class="label">Items Resolved</span><strong style="color: #a3e635;">7</strong></div>
+          <div class="case-row"><span class="label">Package Total</span><strong style="background: linear-gradient(135deg, var(--p-100), var(--pk-300)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">$1,500</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="nav-logo" style="font-size: 22px;">ACCESS<span class="dot">·</span>MKT</a>
+        <p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p>
+      </div>
+      <div><div class="footer-col-title">Services</div><div class="footer-col"><a href="services.html">Packages</a><a href="process.html">How It Works</a><a href="portal.html">Book Consult</a></div></div>
+      <div><div class="footer-col-title">Resources</div><div class="footer-col"><a href="education.html">Education</a><a href="education.html">FAQs</a><a href="education.html">Credit Laws</a></div></div>
+      <div><div class="footer-col-title">Company</div><div class="footer-col"><a href="contact.html">Contact</a><a href="portal.html">Portal</a><a href="#">Privacy</a></div></div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 ACCESS Marketplace. All rights reserved.</p>
+      <div class="trust-chips"><span class="trust-chip">CROA Compliant</span><span class="trust-chip">PCI-DSS Secure</span><span class="trust-chip">SSL Encrypted</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function switchTab(tab) {
+  ['login-form','signup-form','consult-form'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.remove('active');
+    if ((['login','signup','consult'])[i] === tab) btn.classList.add('active');
+  });
+  document.getElementById(tab + '-form').style.display = 'block';
+}
+
+function showDash(e) {
+  e.preventDefault();
+  document.getElementById('auth-panel').style.display = 'none';
+  const dash = document.getElementById('dash-panel');
+  dash.style.display = 'block';
+  // Animate progress bar
+  setTimeout(() => {
+    dash.querySelector('.prog-fill').style.width = '50%';
+  }, 100);
+}
+
+function showAuth() {
+  document.getElementById('dash-panel').style.display = 'none';
+  document.getElementById('auth-panel').style.display = 'block';
+  switchTab('login');
+}
+</script>
+
+</body>
+</html>
