@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Portal — ACCESS Marketplace</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    /* ── Scene ── */
+    .portal-scene{min-height:calc(100vh - var(--nav-h));display:flex;align-items:center;justify-content:center;padding:60px 24px;position:relative;overflow:hidden}
+    .scene-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+    .s1{width:600px;height:600px;top:-100px;right:-150px;background:radial-gradient(circle,rgba(76,29,149,.25) 0%,transparent 70%)}
+    .s2{width:400px;height:400px;bottom:0;left:-80px;background:radial-gradient(circle,rgba(217,70,239,.10) 0%,transparent 70%)}
+
+    /* ── Auth card ── */
+    .portal-wrap{width:100%;max-width:460px;position:relative;z-index:2}
+    .portal-card{position:relative;background:rgba(12,8,32,.82);border:1px solid var(--border-1);border-radius:var(--r-xl);backdrop-filter:blur(32px);padding:48px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(196,181,253,.10),0 24px 80px rgba(0,0,0,.50)}
+    .portal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:24px 24px 0 0;background:linear-gradient(90deg,transparent,var(--p-400),var(--pk-400),transparent)}
+    .portal-header{text-align:center;margin-bottom:36px}
+    .portal-logomark{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-100)}
+    .portal-logomark .dot{color:var(--pk-300);text-shadow:0 0 14px rgba(232,121,249,.4)}
+    .portal-header p{font-size:13px;color:var(--text-400);letter-spacing:.04em}
+    .tab-row{display:flex;background:rgba(0,0,0,.30);border:1px solid var(--border-0);border-radius:var(--r-md);padding:4px;margin-bottom:36px}
+    .tab-btn{flex:1;padding:10px 6px;border:none;background:transparent;border-radius:12px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-400);cursor:pointer;transition:all .25s}
+    .tab-btn.active{background:linear-gradient(135deg,var(--p-500),var(--p-700));color:white;box-shadow:0 2px 14px rgba(109,40,217,.40),inset 0 1px 0 rgba(255,255,255,.12)}
+    .form-group{margin-bottom:20px}
+    .form-note{text-align:center;font-size:12px;color:var(--text-400);line-height:1.6}
+    .form-note a{color:var(--p-200);text-decoration:none}
+    .auth-error{display:none;color:#f87171;font-size:12.5px;margin-bottom:12px;text-align:center;padding:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-sm)}
+    .portal-features{margin-top:20px;padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .pf-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-300)}
+    .pf-ico{width:28px;height:28px;border-radius:8px;background:rgba(109,40,217,.12);border:1px solid rgba(139,92,246,.15);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+    .sec-badge{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:11px;color:var(--text-400);letter-spacing:.06em}
+
+    /* ── Dashboard ── */
+    .dash-wrap{display:none;width:100%;max-width:1200px;padding:0 20px}
+    .dash-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+    .dash-header h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:var(--text-100)}
+    .dash-header p{font-size:13px;color:var(--text-400);margin-top:4px}
+    .dash-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .status-badge-lg{display:flex;align-items:center;gap:8px;padding:8px 18px;background:rgba(109,40,217,.15);border:1px solid rgba(139,92,246,.28);border-radius:100px;font-size:12px;font-weight:600;color:var(--p-100)}
+
+    /* ── Tab Nav ── */
+    .dash-tabs{display:flex;gap:6px;margin-bottom:28px;border-bottom:1px solid var(--border-0);padding-bottom:0}
+    .dash-tab{padding:12px 20px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:var(--text-400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
+    .dash-tab:hover{color:var(--text-200)}
+    .dash-tab.active{color:var(--p-100);border-bottom-color:var(--p-300)}
+    .dash-panel{display:none}
+    .dash-panel.active{display:block}
+
+    /* ── Overview ── */
+    .overview-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:20px}
+    .dash-card{padding:28px 32px;background:var(--glass-1);border:1px solid var(--border-1);border-radius:var(--r-lg);backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+    .card-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--text-400);margin-bottom:22px}
+    .prog-header{display:flex;justify-content:space-between;margin-bottom:10px}
+    .prog-header span:first-child{font-size:13.5px;color:var(--text-200)}
+    .prog-pct{font-size:22px;font-weight:700;font-family:'Cormorant Garamond',serif;background:linear-gradient(135deg,var(--p-100),var(--pk-300));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .prog-track{height:10px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;margin-bottom:24px;position:relative}
+    .prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--p-600),var(--p-300),var(--pk-300));box-shadow:0 0 14px rgba(139,92,246,.5);width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+    .rounds-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+    .round-chip{padding:12px 6px;border-radius:10px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.04em}
+    .r-done{background:rgba(109,40,217,.18);border:1px solid rgba(139,92,246,.30);color:var(--p-100)}
+    .r-active{background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(217,70,239,.12));border:1px solid rgba(217,70,239,.35);color:var(--pk-100)}
+    .r-pending{background:rgba(255,255,255,.02);border:1px solid var(--border-0);color:var(--text-400)}
+    .activity-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid rgba(196,181,253,.05)}
+    .activity-item:last-child{border-bottom:none}
+    .a-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:linear-gradient(135deg,rgba(109,40,217,.20),rgba(76,29,149,.10));border:1px solid rgba(139,92,246,.18)}
+    .a-text{font-size:13.5px;color:var(--text-200);line-height:1.5}
+    .a-date{font-size:11px;color:var(--text-400);margin-top:2px}
+    /* Summary grid */
+    .summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+    .sum-item{padding:14px 16px;background:rgba(0,0,0,.25);border:1px solid var(--border-0);border-radius:var(--r-sm)}
+    .sum-lbl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-400);margin-bottom:4px}
+    .sum-val{font-size:17px;font-weight:700;color:var(--text-100)}
+    .sum-val.grad{background:linear-gradient(135deg,var(--p-100),var(--pk-300));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sum-val.green{color:#86efac}
+
+    /* ── Documents ── */
+    .upload-zone{border:2px dashed var(--border-2);border-radius:var(--r-lg);padding:40px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(109,40,217,.03)}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--p-300);background:rgba(109,40,217,.08)}
+    .upload-zone h4{font-family:'Cormorant Garamond',serif;font-size:20px;margin-bottom:8px;color:var(--text-100)}
+    .upload-zone p{font-size:13px;color:var(--text-400)}
+    .upload-zone .icon{font-size:36px;margin-bottom:14px}
+    #file-input{display:none}
+    .doc-list{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+    .doc-row{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--glass-1);border:1px solid var(--border-1);border-radius:var(--r-md);transition:all .2s}
+    .doc-row:hover{background:var(--glass-2)}
+    .doc-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,rgba(109,40,217,.18),rgba(76,29,149,.08));border:1px solid rgba(139,92,246,.18)}
+    .doc-info{flex:1;min-width:0}
+    .doc-name{font-size:14px;font-weight:500;color:var(--text-100);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .doc-meta{font-size:11.5px;color:var(--text-400);margin-top:2px}
+    .doc-status{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap}
+    .ds-pending{background:rgba(217,70,239,.12);border:1px solid rgba(217,70,239,.25);color:var(--pk-100)}
+    .ds-reviewed{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#6ee7b7}
+    .ds-approved{background:rgba(109,40,217,.15);border:1px solid rgba(139,92,246,.30);color:var(--p-100)}
+    .ds-report{background:rgba(232,184,75,.12);border:1px solid rgba(232,184,75,.25);color:#fcd34d}
+    .doc-actions{display:flex;gap:8px;flex-shrink:0}
+    .doc-btn{padding:5px 12px;background:var(--glass-1);border:1px solid var(--border-1);border-radius:var(--r-sm);font-size:11.5px;color:var(--text-300);cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif}
+    .doc-btn:hover{background:var(--glass-2);color:var(--p-100)}
+    .doc-btn.del:hover{color:#f87171;border-color:rgba(239,68,68,.3)}
+    .empty-docs{text-align:center;padding:48px 20px;color:var(--text-400)}
+    .empty-docs .eicon{font-size:40px;margin-bottom:12px}
+    .empty-docs p{font-size:14px}
+
+    /* ── Messaging ── */
+    .msg-thread{height:360px;overflow-y:auto;padding:16px;background:rgba(0,0,0,.20);border:1px solid var(--border-0);border-radius:var(--r-md) var(--r-md) 0 0;display:flex;flex-direction:column;gap:12px}
+    .msg-thread::-webkit-scrollbar{width:4px}
+    .msg-thread::-webkit-scrollbar-track{background:transparent}
+    .msg-thread::-webkit-scrollbar-thumb{background:var(--border-1);border-radius:2px}
+    .msg-bubble{max-width:75%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.6}
+    .msg-client{align-self:flex-end;background:linear-gradient(135deg,var(--p-500),var(--p-700));color:white;border-radius:14px 14px 3px 14px}
+    .msg-admin{align-self:flex-start;background:var(--glass-2);border:1px solid var(--border-1);color:var(--text-100);border-radius:14px 14px 14px 3px}
+    .msg-who{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;opacity:.7}
+    .msg-time{font-size:10.5px;opacity:.5;margin-top:4px}
+    .msg-input-row{display:flex;gap:0;background:rgba(0,0,0,.25);border:1px solid var(--border-1);border-top:none;border-radius:0 0 var(--r-md) var(--r-md);overflow:hidden}
+    .msg-input{flex:1;background:transparent;border:none;padding:14px 18px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text-100);outline:none}
+    .msg-input::placeholder{color:var(--text-400)}
+    .msg-send{background:linear-gradient(135deg,var(--p-500),var(--p-700));border:none;padding:0 24px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:white;cursor:pointer;letter-spacing:.04em;transition:opacity .2s}
+    .msg-send:hover{opacity:.85}
+    .empty-msgs{text-align:center;padding:60px 20px;color:var(--text-400);font-size:14px}
+
+    /* ── Sign out btn ── */
+    .sign-out{background:transparent;border:1px solid var(--border-1);color:var(--text-400);padding:8px 18px;border-radius:var(--r-sm);font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+    .sign-out:hover{border-color:var(--border-2);color:var(--p-100)}
+
+    /* ── Notify toast ── */
+    .portal-toast{display:none;position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 28px;border-radius:100px;font-size:13.5px;font-weight:600;z-index:9999;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.4);white-space:nowrap}
+    .toast-ok{background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.35);color:#6ee7b7}
+    .toast-err{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.30);color:#f87171}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ACCESS<span class="dot">·</span>MKT</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="process.html">Process</a></li>
+    <li><a href="education.html">Resources</a></li>
+    <li><a href="contact.html">Contact</a></li>
+    <li><a href="portal.html" class="nav-portal active">Client Portal →</a></li>
+  </ul>
+</nav>
+
+<div class="page-wrap">
+<div class="portal-scene" id="portal-scene">
+  <div class="scene-orb s1"></div>
+  <div class="scene-orb s2"></div>
+
+  <!-- ════════════════════ AUTH PANEL ════════════════════ -->
+  <div class="portal-wrap anim" id="auth-panel">
+    <div class="portal-card">
+      <div class="portal-header">
+        <div class="portal-logomark">ACCESS<span class="dot">·</span>MKT</div>
+        <p>Secure Client Portal</p>
+      </div>
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('signup')">Register</button>
+        <button class="tab-btn" onclick="switchTab('consult')">Book Consult</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form id="login-form" onsubmit="loginUser(event)">
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" id="login-email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input type="password" id="login-pass" class="field" placeholder="••••••••••••" required/>
+        </div>
+        <div class="auth-error" id="login-error"></div>
+        <button type="submit" class="btn-primary" style="width:100%;margin-top:4px;">Sign In to Portal</button>
+        <p class="form-note" style="margin-top:14px;"><a href="#">Forgot your password?</a></p>
+      </form>
+
+      <!-- REGISTER -->
+      <form id="signup-form" style="display:none" onsubmit="registerUser(event)">
+        <div class="form-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" id="reg-name" class="field" placeholder="Jane Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" id="reg-email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Phone Number</label>
+          <input type="tel" id="reg-phone" class="field" placeholder="(555) 000-0000"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Create Password</label>
+          <input type="password" id="reg-pass" class="field" placeholder="Min. 6 characters" required minlength="6"/>
+        </div>
+        <div class="auth-error" id="reg-error"></div>
+        <button type="submit" class="btn-primary" style="width:100%;margin-top:4px;">Create My Account</button>
+        <p class="form-note" style="margin-top:14px;">By registering you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.</p>
+      </form>
+
+      <!-- BOOK CONSULT -->
+      <form id="consult-form" style="display:none" onsubmit="bookConsult(event)">
+        <div class="form-group">
+          <label class="field-label">Full Name</label>
+          <input type="text" id="c-name" class="field" placeholder="Jane Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input type="email" id="c-email" class="field" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Phone Number</label>
+          <input type="tel" id="c-phone" class="field" placeholder="(555) 000-0000"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Preferred Date</label>
+          <input type="date" id="c-date" class="field"/>
+        </div>
+        <div class="form-group">
+          <label class="field-label">Questions or Context (Optional)</label>
+          <textarea id="c-msg" rows="3" class="field" placeholder="Any questions for your expert..."></textarea>
+        </div>
+        <button type="submit" class="btn-accent" style="width:100%;margin-top:4px;">Book Consultation — $100</button>
+        <p class="form-note" style="margin-top:14px;">$100 fee credited toward your service package. 24/7 support: (888) 555-0192</p>
+      </form>
+    </div>
+
+    <div class="glass static portal-features anim anim-2">
+      <div class="pf-row"><div class="pf-ico">🔒</div> Encrypted document upload</div>
+      <div class="pf-row"><div class="pf-ico">📊</div> Real-time status tracking</div>
+      <div class="pf-row"><div class="pf-ico">💬</div> Direct team messaging</div>
+      <div class="pf-row"><div class="pf-ico">📥</div> Download expert reports</div>
+    </div>
+    <div class="sec-badge">🔒 256-bit SSL &nbsp;·&nbsp; PCI-DSS Compliant &nbsp;·&nbsp; Encrypted Storage</div>
+  </div>
+
+  <!-- ════════════════════ DASHBOARD ════════════════════ -->
+  <div class="dash-wrap anim" id="dash-panel">
+
+    <div class="dash-header">
+      <div>
+        <h2 id="d-welcome">Welcome back</h2>
+        <p id="d-meta">Loading your case...</p>
+      </div>
+      <div class="dash-controls">
+        <div class="status-badge-lg"><span class="badge-dot"></span><span id="d-status-txt">Loading...</span></div>
+        <button class="sign-out" onclick="signOut()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="dash-tabs">
+      <button class="dash-tab active" onclick="switchDashTab('overview',this)">📊 Overview</button>
+      <button class="dash-tab" onclick="switchDashTab('documents',this)">📁 Documents</button>
+      <button class="dash-tab" onclick="switchDashTab('messages',this)">💬 Messages <span id="msg-badge" style="display:none;background:var(--pk-400);border-radius:100px;padding:1px 7px;font-size:10px;margin-left:4px;color:white;"></span></button>
+      <button class="dash-tab" onclick="switchDashTab('reports',this)">📥 Reports</button>
+    </div>
+
+    <!-- ── OVERVIEW ── -->
+    <div class="dash-panel active" id="panel-overview">
+      <div class="overview-grid">
+        <!-- Left: Progress -->
+        <div class="dash-card">
+          <div class="card-label">Dispute Progress</div>
+          <div class="prog-header">
+            <span id="d-round-label">Loading...</span>
+            <span class="prog-pct" id="d-pct">0%</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" id="d-prog-fill"></div></div>
+          <div class="rounds-row" id="d-rounds-row">
+            <div class="round-chip r-pending">Round 1<br/>Pending</div>
+            <div class="round-chip r-pending">Round 2<br/>Pending</div>
+            <div class="round-chip r-pending">Round 3<br/>Pending</div>
+            <div class="round-chip r-pending">Round 4<br/>Pending</div>
+          </div>
+          <div style="border-top:1px solid var(--border-0);padding-top:18px;">
+            <div class="card-label" style="margin-bottom:14px;">Recent Activity</div>
+            <div id="d-activity">
+              <div class="activity-item"><div class="a-icon">ℹ️</div><div><div class="a-text">Your case is being set up. Check back soon for updates from your expert team.</div><div class="a-date">Just now</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Summary -->
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div class="dash-card">
+            <div class="card-label">Case Summary</div>
+            <div class="summary-grid">
+              <div class="sum-item"><div class="sum-lbl">Trade Lines</div><div class="sum-val grad" id="s-lines">—</div></div>
+              <div class="sum-item"><div class="sum-lbl">Package</div><div class="sum-val" id="s-pkg" style="font-size:13px;">—</div></div>
+              <div class="sum-item"><div class="sum-lbl">Disputes Filed</div><div class="sum-val" id="s-disputes">0</div></div>
+              <div class="sum-item"><div class="sum-lbl">Items Resolved</div><div class="sum-val green" id="s-resolved">0</div></div>
+            </div>
+            <div style="padding:12px 14px;background:rgba(109,40,217,.08);border:1px solid rgba(139,92,246,.18);border-radius:var(--r-sm);">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pk-300);margin-bottom:4px;">Admin Notes</div>
+              <p id="s-notes" style="font-size:13.5px;color:var(--text-200);line-height:1.7;">No notes yet from your expert team.</p>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="card-label">24/7 Support</div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border-0);">
+              <div style="width:38px;height:38px;border-radius:50%;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🟢</div>
+              <div><div style="font-size:13.5px;font-weight:600;color:var(--text-100);">(888) 555-0192</div><div style="font-size:12px;color:var(--text-400);">24/7 Support Line</div></div>
+            </div>
+            <div style="padding-top:14px;">
+              <button class="btn-secondary" style="width:100%;font-size:12.5px;" onclick="switchDashTab('messages',document.querySelectorAll('.dash-tab')[2])">Open Messages →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DOCUMENTS ── -->
+    <div class="dash-panel" id="panel-documents">
+      <div class="dash-card" style="margin-bottom:20px;">
+        <div class="card-label">Upload a Document</div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+          <div class="icon">📤</div>
+          <h4>Click to Upload or Drag &amp; Drop</h4>
+          <p>Credit reports, IDs, supporting documents — any file type accepted<br/>Max 4MB per file</p>
+        </div>
+        <input type="file" id="file-input" multiple onchange="handleFileSelect(event)" accept="*/*"/>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:var(--text-400);">Common uploads:</span>
+          <span style="font-size:12px;color:var(--text-300);">Credit Report · Photo ID · Bank Statement · Dispute Letters</span>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="card-label" style="margin-bottom:12px;">Your Uploaded Documents</div>
+        <div id="doc-list"></div>
+      </div>
+    </div>
+
+    <!-- ── MESSAGES ── -->
+    <div class="dash-panel" id="panel-messages">
+      <div class="dash-card">
+        <div class="card-label" style="margin-bottom:0;">Message Your Expert Team</div>
+        <p style="font-size:13px;color:var(--text-400);margin-bottom:20px;">Messages are monitored during business hours (Mon–Fri 9AM–5PM ET). For urgent needs call (888) 555-0192.</p>
+        <div class="msg-thread" id="msg-thread"></div>
+        <div class="msg-input-row">
+          <input type="text" class="msg-input" id="msg-input" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+          <button class="msg-send" onclick="sendMsg()">Send →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS ── -->
+    <div class="dash-panel" id="panel-reports">
+      <div class="dash-card">
+        <div class="card-label">Expert Reports &amp; Documents from ACCESS</div>
+        <p style="font-size:13.5px;color:var(--text-300);margin-bottom:20px;line-height:1.7;">Reports uploaded by your expert team will appear here. You will be notified via message when a new report is available for download.</p>
+        <div id="reports-list"></div>
+      </div>
+    </div>
+
+  </div><!-- end dash-wrap -->
+
+</div><!-- end portal-scene -->
+</div><!-- end page-wrap -->
+
+<div class="portal-toast" id="portal-toast"></div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><a href="index.html" class="nav-logo" style="font-size:22px;">ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven.</p></div>
+      <div><div class="footer-col-title">Services</div><div class="footer-col"><a href="services.html">Packages</a><a href="process.html">How It Works</a><a href="portal.html">Book Consult</a></div></div>
+      <div><div class="footer-col-title">Resources</div><div class="footer-col"><a href="education.html">Education</a><a href="education.html">FAQs</a><a href="education.html">Credit Laws</a></div></div>
+      <div><div class="footer-col-title">Company</div><div class="footer-col"><a href="contact.html">Contact</a><a href="portal.html">Portal</a><a href="#">Privacy</a><a href="admin.html" style="margin-top:8px;color:rgba(167,139,250,.30);font-size:12px;">Admin</a></div></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2025 ACCESS Marketplace. All rights reserved.</p><div class="trust-chips"><span class="trust-chip">CROA Compliant</span><span class="trust-chip">PCI-DSS Secure</span><span class="trust-chip">SSL Encrypted</span></div></div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════
+   STORAGE HELPERS
+═══════════════════════════════════════════ */
+const SK_CLIENTS  = 'access_clients';
+const SK_SESSION  = 'current_user';
+
+function getClients(){ try{ return JSON.parse(localStorage.getItem(SK_CLIENTS)||'[]'); }catch{ return []; } }
+function saveClients(d){ localStorage.setItem(SK_CLIENTS, JSON.stringify(d)); }
+function getSession(){ try{ return JSON.parse(localStorage.getItem(SK_SESSION)||'null'); }catch{ return null; } }
+function saveSession(u){ localStorage.setItem(SK_SESSION, JSON.stringify(u)); }
+function clearSession(){ localStorage.removeItem(SK_SESSION); }
+
+function docKey(id){ return 'access_docs_' + id; }
+function msgKey(id){ return 'access_msgs_' + id; }
+function getDocs(id){ try{ return JSON.parse(localStorage.getItem(docKey(id))||'[]'); }catch{ return []; } }
+function saveDocs(id, d){ localStorage.setItem(docKey(id), JSON.stringify(d)); }
+function getMsgs(id){ try{ return JSON.parse(localStorage.getItem(msgKey(id))||'[]'); }catch{ return []; } }
+function saveMsgs(id, m){ localStorage.setItem(msgKey(id), JSON.stringify(m)); }
+
+/* ═══════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════ */
+function switchTab(tab){
+  ['login-form','signup-form','consult-form'].forEach(id=>{ document.getElementById(id).style.display='none'; });
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(['login','signup','consult'])[i]===tab));
+  document.getElementById(tab+'-form').style.display='block';
+}
+
+function loginUser(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  const clients = getClients();
+  const user = clients.find(c => c.email && c.email.toLowerCase()===email && c.type==='registration' && c.password===pass);
+  const errEl = document.getElementById('login-error');
+  if(!user){ errEl.style.display='block'; errEl.textContent='No account found with those credentials. Please register first.'; return; }
+  errEl.style.display='none';
+  saveSession(user);
+  showDash(user);
+}
+
+function registerUser(e){
+  e.preventDefault();
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  const errEl = document.getElementById('reg-error');
+  const clients = getClients();
+  if(clients.find(c=>c.email&&c.email.toLowerCase()===email&&c.type==='registration')){
+    errEl.style.display='block'; errEl.textContent='An account with this email already exists. Please sign in.'; return;
+  }
+  errEl.style.display='none';
+  const record = {
+    id:'reg-'+Date.now(), name, email, phone, password: pass, type:'registration',
+    date:new Date().toISOString(), creditLines:'', package:'', status:'New',
+    round:'N/A', disputesSubmitted:'0', itemsResolved:'0', message:'', notes:''
+  };
+  clients.unshift(record);
+  saveClients(clients);
+  saveSession(record);
+  showDash(record);
+}
+
+function bookConsult(e){
+  e.preventDefault();
+  const name  = document.getElementById('c-name').value.trim();
+  const email = document.getElementById('c-email').value.trim().toLowerCase();
+  const phone = document.getElementById('c-phone').value.trim();
+  const date  = document.getElementById('c-date').value;
+  const msg   = document.getElementById('c-msg').value.trim();
+  const record = {
+    id:'consult-'+Date.now(), name, email, phone, password:'', type:'consultation',
+    date:new Date().toISOString(), creditLines:'', package:'Consultation — $100',
+    status:'Pending', round:'N/A', disputesSubmitted:'0', itemsResolved:'0',
+    message:(date?'Preferred date: '+date+'. ':'')+msg, notes:''
+  };
+  const clients = getClients();
+  clients.unshift(record);
+  saveClients(clients);
+  saveSession(record);
+  showDash(record);
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════ */
+function showDash(user){
+  document.getElementById('auth-panel').style.display='none';
+  const dw = document.getElementById('dash-wrap');
+  dw.style.display='flex';
+  dw.style.flexDirection='column';
+  dw.style.alignItems='center';
+  // Hide auth scene background extras
+  document.getElementById('portal-scene').style.alignItems='flex-start';
+  document.getElementById('portal-scene').style.paddingTop='40px';
+  refreshDash(user.id);
+  startPolling(user.id);
+  renderDocs(user.id);
+  renderMsgs(user.id);
+  renderReports(user.id);
+}
+
+function refreshDash(clientId){
+  const clients = getClients();
+  const user = clients.find(c=>c.id===clientId);
+  if(!user) return;
+
+  // Save updated session
+  saveSession(user);
+
+  const fname = (user.name||'').split(' ')[0] || 'there';
+  document.getElementById('d-welcome').textContent = 'Welcome back, ' + fname;
+  document.getElementById('d-meta').textContent = 'Client ID #ACX-' + user.id.slice(-6).toUpperCase() + (user.package ? ' · ' + user.package : '');
+  document.getElementById('d-status-txt').textContent = user.status || 'New';
+
+  // Progress
+  const roundMap = {
+    'N/A':0, 'Round 1':12, 'Round 1 Done':25,
+    'Round 2':38, 'Round 2 Done':55,
+    'Round 3':68, 'Round 3 Done':80,
+    'Round 4':90, 'All Done':100
+  };
+  const pct = roundMap[user.round] ?? 0;
+  document.getElementById('d-pct').textContent = pct + '%';
+  setTimeout(()=>{ document.getElementById('d-prog-fill').style.width = pct + '%'; }, 100);
+
+  const roundLabel = {
+    'N/A':'Not Started', 'Round 1':'Round 1 In Progress', 'Round 1 Done':'Round 1 Complete',
+    'Round 2':'Round 2 In Progress', 'Round 2 Done':'Round 2 Complete',
+    'Round 3':'Round 3 In Progress', 'Round 3 Done':'Round 3 Complete',
+    'Round 4':'Round 4 In Progress', 'All Done':'All Rounds Complete'
+  };
+  document.getElementById('d-round-label').textContent = roundLabel[user.round] || 'Not started yet';
+
+  // Round chips
+  const chips = document.getElementById('d-rounds-row');
+  const r1done = ['Round 1 Done','Round 2','Round 2 Done','Round 3','Round 3 Done','Round 4','All Done'].includes(user.round);
+  const r2done = ['Round 2 Done','Round 3','Round 3 Done','Round 4','All Done'].includes(user.round);
+  const r3done = ['Round 3 Done','Round 4','All Done'].includes(user.round);
+  const r4done = ['All Done'].includes(user.round);
+  const r1act  = user.round==='Round 1';
+  const r2act  = user.round==='Round 2';
+  const r3act  = user.round==='Round 3';
+  const r4act  = user.round==='Round 4';
+
+  function chipClass(done, active){ return done?'round-chip r-done':active?'round-chip r-active':'round-chip r-pending'; }
+  function chipText(n, done, active, rnd){
+    const labels = {done:'✓ Done', active:'⚡ Active', pending:'Pending'};
+    const st = done?'done':active?'active':'pending';
+    return `Round ${n}<br/>${labels[st]}`;
+  }
+
+  chips.innerHTML = `
+    <div class="${chipClass(r1done,r1act)}">${chipText(1,r1done,r1act)}</div>
+    <div class="${chipClass(r2done,r2act)}">${chipText(2,r2done,r2act)}</div>
+    <div class="${chipClass(r3done,r3act)}">${chipText(3,r3done,r3act)}</div>
+    <div class="${chipClass(r4done,r4act)}">${chipText(4,r4done,r4act)}</div>
+  `;
+
+  // Case summary
+  document.getElementById('s-lines').textContent = user.creditLines || '—';
+  document.getElementById('s-pkg').textContent   = user.package     || 'Not assigned yet';
+  document.getElementById('s-disputes').textContent = user.disputesSubmitted || '0';
+  document.getElementById('s-resolved').textContent = user.itemsResolved     || '0';
+  document.getElementById('s-notes').textContent    = user.notes || 'No notes yet from your expert team.';
+
+  // Activity feed (build from round)
+  buildActivity(user);
+}
+
+function buildActivity(user){
+  const el = document.getElementById('d-activity');
+  const items = [];
+  const now = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  if(user.round!=='N/A') items.push({icon:'⚡', text:'Dispute round updated to: '+user.round, date:now});
+  if(user.package) items.push({icon:'📋', text:'Service package confirmed: '+user.package, date:user.date?new Date(user.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):now});
+  if(user.status==='Active') items.push({icon:'🔄', text:'Your case is actively being worked on by your expert team.', date:now});
+  if(user.status==='Complete') items.push({icon:'🏆', text:'All dispute rounds complete. Download your final report in the Reports tab.', date:now});
+  if(user.notes) items.push({icon:'📝', text:'Your expert left a note — see Case Summary.', date:now});
+
+  if(items.length===0){
+    items.push({icon:'ℹ️', text:'Your case is being set up. Updates will appear here as your expert team works on your file.', date:'Just now'});
+  }
+
+  el.innerHTML = items.map(i=>`
+    <div class="activity-item">
+      <div class="a-icon">${i.icon}</div>
+      <div><div class="a-text">${i.text}</div><div class="a-date">${i.date}</div></div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════
+   DOCUMENTS
+═══════════════════════════════════════════ */
+function renderDocs(clientId){
+  const docs = getDocs(clientId).filter(d=>d.uploadedBy==='client');
+  const el = document.getElementById('doc-list');
+  if(docs.length===0){
+    el.innerHTML=`<div class="empty-docs"><div class="eicon">📁</div><p>No documents uploaded yet. Use the upload area above to submit your files.</p></div>`;
+    return;
+  }
+  el.innerHTML = docs.map(d=>`
+    <div class="doc-row" id="docrow-${d.id}">
+      <div class="doc-icon">${fileIcon(d.name)}</div>
+      <div class="doc-info">
+        <div class="doc-name">${esc(d.name)}</div>
+        <div class="doc-meta">${d.size} · Uploaded ${d.date}</div>
+      </div>
+      <span class="doc-status ${statusClass(d.status)}">${d.status}</span>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc('${d.id}','${clientId}')">Download</button>
+        <button class="doc-btn del" onclick="deleteClientDoc('${d.id}','${clientId}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function fileIcon(name){
+  const ext = (name||'').split('.').pop().toLowerCase();
+  const map = {pdf:'📄',jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',txt:'📃',zip:'📦',rar:'📦'};
+  return map[ext] || '📎';
+}
+
+function statusClass(s){
+  return {pending:'ds-pending',reviewed:'ds-reviewed',approved:'ds-approved',report:'ds-report'}[s]||'ds-pending';
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function handleFileSelect(e){ processFiles([...e.target.files]); e.target.value=''; }
+function dragOver(e){ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag'); }
+function dragLeave(e){ document.getElementById('upload-zone').classList.remove('drag'); }
+function dropFile(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  processFiles([...e.dataTransfer.files]);
+}
+
+function processFiles(files){
+  const user = getSession();
+  if(!user){ showToast('Please sign in to upload files.','err'); return; }
+  if(!user.id){ showToast('Session error. Please sign in again.','err'); return; }
+
+  files.forEach(file=>{
+    if(file.size > 4*1024*1024){ showToast(file.name+' exceeds 4MB limit.','err'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const docs = getDocs(user.id);
+      const doc = {
+        id: 'doc-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),
+        name: file.name,
+        size: formatBytes(file.size),
+        type: file.type,
+        date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+        status: 'pending',
+        uploadedBy: 'client',
+        data: ev.target.result
+      };
+      docs.push(doc);
+      saveDocs(user.id, docs);
+      renderDocs(user.id);
+      showToast('✓ ' + file.name + ' uploaded successfully','ok');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function formatBytes(b){ if(b<1024) return b+'B'; if(b<1048576) return (b/1024).toFixed(1)+'KB'; return (b/1048576).toFixed(1)+'MB'; }
+
+function downloadDoc(docId, clientId){
+  const docs = getDocs(clientId);
+  const doc = docs.find(d=>d.id===docId);
+  if(!doc || !doc.data) return;
+  const a = document.createElement('a');
+  a.href = doc.data;
+  a.download = doc.name;
+  a.click();
+}
+
+function deleteClientDoc(docId, clientId){
+  if(!confirm('Remove this document from your file?')) return;
+  const docs = getDocs(clientId).filter(d=>d.id!==docId);
+  saveDocs(clientId, docs);
+  renderDocs(clientId);
+  showToast('Document removed.','ok');
+}
+
+/* ═══════════════════════════════════════════
+   MESSAGES
+═══════════════════════════════════════════ */
+function renderMsgs(clientId){
+  const msgs = getMsgs(clientId);
+  const thread = document.getElementById('msg-thread');
+  if(msgs.length===0){
+    thread.innerHTML=`<div class="empty-msgs">No messages yet. Send your first message to your expert team below.</div>`;
+    return;
+  }
+  thread.innerHTML = msgs.map(m=>`
+    <div style="display:flex;flex-direction:column;align-items:${m.from==='client'?'flex-end':'flex-start'};">
+      <div class="msg-bubble msg-${m.from}">
+        <div class="msg-who">${m.from==='client'?'You':'ACCESS Expert'}</div>
+        ${esc(m.text)}
+        <div class="msg-time">${m.date}</div>
+      </div>
+    </div>
+  `).join('');
+  thread.scrollTop = thread.scrollHeight;
+
+  // Clear unread badge
+  const badge = document.getElementById('msg-badge');
+  badge.style.display='none';
+}
+
+function sendMsg(){
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const user = getSession();
+  if(!user) return;
+  const msgs = getMsgs(user.id);
+  msgs.push({
+    id:'msg-'+Date.now(), from:'client', text,
+    date: new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})
+  });
+  saveMsgs(user.id, msgs);
+  input.value='';
+  renderMsgs(user.id);
+  showToast('Message sent.','ok');
+}
+
+/* ═══════════════════════════════════════════
+   REPORTS (admin uploads for client)
+═══════════════════════════════════════════ */
+function renderReports(clientId){
+  const docs = getDocs(clientId).filter(d=>d.uploadedBy==='admin');
+  const el = document.getElementById('reports-list');
+  if(docs.length===0){
+    el.innerHTML=`<div class="empty-docs"><div class="eicon">📋</div><p>No reports available yet. Reports from your expert team will appear here when ready.</p></div>`;
+    return;
+  }
+  el.innerHTML = docs.map(d=>`
+    <div class="doc-row">
+      <div class="doc-icon">📋</div>
+      <div class="doc-info">
+        <div class="doc-name">${esc(d.name)}</div>
+        <div class="doc-meta">From ACCESS Expert · ${d.date}</div>
+      </div>
+      <span class="doc-status ds-report">Report</span>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc('${d.id}','${clientId}')">⬇ Download</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════
+   POLLING — picks up admin changes every 8s
+═══════════════════════════════════════════ */
+let pollInterval = null;
+function startPolling(clientId){
+  if(pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(()=>{
+    refreshDash(clientId);
+    renderDocs(clientId);
+    renderReports(clientId);
+
+    // Check for new admin messages
+    const msgs = getMsgs(clientId);
+    const adminMsgs = msgs.filter(m=>m.from==='admin');
+    const lastSeen = parseInt(localStorage.getItem('last_seen_msg_'+clientId)||'0');
+    const newAdminMsgs = adminMsgs.filter(m=>parseInt(m.id.replace('msg-',''))>lastSeen);
+    if(newAdminMsgs.length>0 && document.getElementById('panel-messages').style.display!=='block'){
+      const badge = document.getElementById('msg-badge');
+      badge.style.display='inline';
+      badge.textContent = newAdminMsgs.length;
+    }
+    if(document.getElementById('panel-messages').classList.contains('active')){
+      renderMsgs(clientId);
+      if(adminMsgs.length>0) localStorage.setItem('last_seen_msg_'+clientId, Math.max(...adminMsgs.map(m=>parseInt(m.id.replace('msg-','')))));
+    }
+  }, 8000);
+}
+
+function switchDashTab(name, btn){
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dash-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  const user = getSession();
+  if(!user) return;
+  if(name==='messages'){
+    renderMsgs(user.id);
+    document.getElementById('msg-badge').style.display='none';
+    if(getMsgs(user.id).filter(m=>m.from==='admin').length>0){
+      localStorage.setItem('last_seen_msg_'+user.id, Math.max(...getMsgs(user.id).filter(m=>m.from==='admin').map(m=>parseInt(m.id.replace('msg-','')))));
+    }
+  }
+  if(name==='documents') renderDocs(user.id);
+  if(name==='reports') renderReports(user.id);
+}
+
+function signOut(){
+  clearInterval(pollInterval);
+  clearSession();
+  document.getElementById('dash-panel').style.display='none';
+  document.getElementById('auth-panel').style.display='block';
+  document.getElementById('portal-scene').style.alignItems='center';
+  document.getElementById('portal-scene').style.paddingTop='60px';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pass').value='';
+  switchTab('login');
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type='ok'){
+  const t = document.getElementById('portal-toast');
+  t.className = 'portal-toast toast-'+type;
+  t.textContent = msg;
+  t.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.style.display='none', 3000);
+}
+
+/* ═══════════════════════════════════════════
+   AUTO LOGIN
+═══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  const u = getSession();
+  if(u && u.id){
+    const clients = getClients();
+    const fresh = clients.find(c=>c.id===u.id);
+    if(fresh){ showDash(fresh); }
+  }
+});
+</script>
+</body>
+</html>
