@@ -45,7 +45,7 @@
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo">ACCESS<span class="dot">·</span>MKT</a>
+  <a href="index.html" class="nav-logo"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="services.html">Services</a></li>
@@ -233,7 +233,7 @@
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How long does the credit repair process take?<div class="faq-ico">+</div></button><div class="faq-a"><p>The full four-round dispute process typically takes 4–6 months. Bureaus have up to 30–45 days to respond to each dispute. You'll receive monthly updates throughout the entire process.</p></div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is there a guarantee my credit score will improve?<div class="faq-ico">+</div></button><div class="faq-a"><p>No legitimate credit repair company can guarantee specific results — and ACCESS will never make such a claim. Per CROA, we provide a full no-guarantee disclaimer. What we guarantee is expert-level effort and four complete rounds of dispute management.</p></div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Does the $1 subscription affect my credit score?<div class="faq-ico">+</div></button><div class="faq-a"><p>No. The $1/month credit monitoring plan uses FCRA-compliant third-party applications that access your credit via soft pulls only. Soft pulls have zero impact on your credit score — only hard inquiries (like applying for a loan) affect it. You can monitor your credit and track improvements throughout the dispute process with no score impact.</p></div></div>
-        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I pay with CashApp, Zelle, or Venmo?<div class="faq-ico">+</div></button><div class="faq-a"><p>Yes. We accept CashApp ($AccessMarketplace), Zelle (payments@accessmarketplace.com), Venmo (@Access-Marketplace), as well as credit/debit cards, PayPal, Apple Pay, Google Pay, and payment plans. Visit the Services page to complete payment through your preferred method.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I pay with CashApp, Zelle, or Venmo?<div class="faq-ico">+</div></button><div class="faq-a"><p>Yes. We accept CashApp ($AccessMarketplace), Zelle (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f1f0e16020a011b1c2f0e0c0c0a1c1c020e1d040a1b1f030e0c0a410c0002">[email&#160;protected]</a>), Venmo (@Access-Marketplace), as well as credit/debit cards, PayPal, Apple Pay, Google Pay, and payment plans. Visit the Services page to complete payment through your preferred method.</p></div></div>
         <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept?<div class="faq-ico">+</div></button><div class="faq-a"><p>We accept all major payment methods: CashApp, Zelle, Venmo, Visa, Mastercard, American Express, PayPal, Apple Pay, Google Pay, and payment plans for larger packages. All payments are processed securely.</p></div></div>
       </div>
     </div>
@@ -259,7 +259,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-grid">
-      <div><a href="index.html" class="nav-logo" style="font-size:22px;">ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
+      <div><a href="index.html" class="nav-logo" style="font-size:22px;"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
       <div><div class="footer-col-title">Services</div><div class="footer-col"><a href="services.html">Packages</a><a href="process.html">How It Works</a><a href="portal.html">Book Consult</a></div></div>
       <div><div class="footer-col-title">Resources</div><div class="footer-col"><a href="education.html">Education</a><a href="education.html">FAQs</a><a href="education.html">Credit Laws</a></div></div>
       <div><div class="footer-col-title">Company</div><div class="footer-col"><a href="contact.html">Contact</a><a href="portal.html">Portal</a><a href="#">Privacy</a><a href="admin.html" style="margin-top:8px;color:rgba(167,139,250,.30);font-size:12px;">Admin</a></div></div>
@@ -268,7 +268,7 @@
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function toggleFaq(btn){
   const item = btn.closest('.faq-item');
   const isOpen = item.classList.contains('open');
@@ -276,14 +276,4 @@ function toggleFaq(btn){
   if(!isOpen) item.classList.add('open');
 }
 // Smooth scroll to anchor on load
-window.addEventListener('DOMContentLoaded',()=>{
-  if(location.hash){
-    setTimeout(()=>{
-      const el = document.querySelector(location.hash);
-      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 200);
-  }
-});
-</script>
-</body>
-</html>
+window.addEventListen
