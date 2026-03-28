@@ -77,7 +77,7 @@
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo">ACCESS<span class="dot">·</span>MKT</a>
+  <a href="index.html" class="nav-logo"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="services.html" class="active">Services</a></li>
@@ -275,7 +275,7 @@
         <div class="method-detail"><div class="mlabel">Send via CashApp To</div><div class="handle">$AccessMarketplace</div><p>Open CashApp → Pay → enter amount → send to <strong>$AccessMarketplace</strong>. Add your name and package in the note.</p></div>
       </div>
       <div class="method-panel" id="m-zelle">
-        <div class="method-detail"><div class="mlabel">Send via Zelle To</div><div class="handle">payments@accessmarketplace.com</div><p>Open your banking app or Zelle → send to <strong>payments@accessmarketplace.com</strong>. Include name and package in memo.</p></div>
+        <div class="method-detail"><div class="mlabel">Send via Zelle To</div><div class="handle"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4232233b2f272c3631022321212731312f2330292736322e2321276c212d2f">[email&#160;protected]</a></div><p>Open your banking app or Zelle → send to <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0474657d69616a7077446567676177776965766f617074686567612a676b69">[email&#160;protected]</a></strong>. Include name and package in memo.</p></div>
       </div>
       <div class="method-panel" id="m-venmo">
         <div class="method-detail"><div class="mlabel">Send via Venmo To</div><div class="handle">@Access-Marketplace</div><p>Open Venmo → search <strong>@Access-Marketplace</strong> → enter amount → include your name and package in the description.</p></div>
@@ -301,7 +301,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-grid">
-      <div><a href="index.html" class="nav-logo" style="font-size:22px;">ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
+      <div><a href="index.html" class="nav-logo" style="font-size:22px;"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
       <div><div class="footer-col-title">Services</div><div class="footer-col"><a href="services.html">Packages</a><a href="process.html">How It Works</a><a href="portal.html">Book Consult</a></div></div>
       <div><div class="footer-col-title">Resources</div><div class="footer-col"><a href="education.html">Education</a><a href="education.html">FAQs</a><a href="education.html">Credit Laws</a></div></div>
       <div><div class="footer-col-title">Company</div><div class="footer-col"><a href="contact.html">Contact</a><a href="portal.html">Portal</a><a href="#">Privacy</a><a href="admin.html" style="margin-top:8px;color:rgba(167,139,250,.30);font-size:12px;">Admin</a></div></div>
@@ -310,7 +310,7 @@
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function openPay(pkg, price) {
   document.getElementById('pay-title').textContent = 'Complete Payment — ' + price;
   document.getElementById('pay-desc').textContent = 'Package: ' + pkg;
@@ -335,13 +335,4 @@ function submitPay(){
     date:new Date().toISOString(),creditLines:'',
     package:document.getElementById('pay-title').textContent.replace('Complete Payment — ',''),
     status:'Pending',round:'N/A',
-    message:'Payment via: '+(document.querySelector('.method-tab.active')?.textContent||''),
-    notes:'Ref: '+(document.getElementById('p-ref').value||'N/A')
-  });
-  localStorage.setItem('access_clients',JSON.stringify(clients));
-  document.getElementById('pay-form').style.display='none';
-  document.getElementById('pay-success').style.display='block';
-}
-</script>
-</body>
-</html>
+    messa
