@@ -120,10 +120,12 @@ nav {
 }
 
 .nav-logo-img {
-  height: 58px;
-  width: 58px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 12px rgba(139,92,246,0.70));
+  height: 60px;
+  width: 60px;
+  object-fit: cover;
+  object-position: 0% center;
+  border-radius: 4px;
+  filter: drop-shadow(0 0 14px rgba(139,92,246,0.80)) brightness(1.15);
   flex-shrink: 0;
 }
 
