@@ -37,7 +37,7 @@
   --glow-p:     rgba(109, 40, 217, 0.45);
   --glow-p-sm:  rgba(109, 40, 217, 0.25);
   --glow-pk:    rgba(232, 121, 249, 0.30);
-  --nav-h: 76px;
+  --nav-h: 88px;
   --r-sm: 10px;
   --r-md: 16px;
   --r-lg: 24px;
@@ -120,10 +120,10 @@ nav {
 }
 
 .nav-logo-img {
-  height: 40px;
-  width: 40px;
+  height: 58px;
+  width: 58px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(139,92,246,0.55));
+  filter: drop-shadow(0 0 12px rgba(139,92,246,0.70));
   flex-shrink: 0;
 }
 
