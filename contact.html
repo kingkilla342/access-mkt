@@ -39,7 +39,7 @@
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo">ACCESS<span class="dot">·</span>MKT</a>
+  <a href="index.html" class="nav-logo"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="services.html">Services</a></li>
@@ -67,9 +67,9 @@
           <h3>Let's Start a<br/><span style="background:linear-gradient(135deg,var(--p-100),var(--pk-300));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Conversation</span></h3>
           <p>Reach out via any of the methods below. All inquiries are responded to within one business day. For urgent matters, our support line is available 24/7.</p>
 
-          <a class="cm-item" href="mailto:info@accessmarketplace.com">
+          <a class="cm-item" href="/cdn-cgi/l/email-protection#cea7a0a8a18eafadadabbdbda3afbca5abbabea2afadabe0ada1a3">
             <div class="cm-ico">📧</div>
-            <div><strong>Business Email</strong><span>info@accessmarketplace.com</span></div>
+            <div><strong>Business Email</strong><span><span class="__cf_email__" data-cfemail="4821262e2708292b2b2d3b3b25293a232d3c3824292b2d662b2725">[email&#160;protected]</span></span></div>
           </a>
 
           <a class="cm-item" href="tel:+18885550192">
@@ -77,9 +77,9 @@
             <div><strong>24/7 Support Line</strong><span>(888) 555-0192</span></div>
           </a>
 
-          <a class="cm-item" href="mailto:partners@accessmarketplace.com">
+          <a class="cm-item" href="/cdn-cgi/l/email-protection#dcacbdaea8b2b9aeaf9cbdbfbfb9afafb1bdaeb7b9a8acb0bdbfb9f2bfb3b1">
             <div class="cm-ico">🤝</div>
-            <div><strong>Partnership Inquiries</strong><span>partners@accessmarketplace.com</span></div>
+            <div><strong>Partnership Inquiries</strong><span><span class="__cf_email__" data-cfemail="275746555349425554674644444254544a46554c4253574b4644420944484a">[email&#160;protected]</span></span></div>
           </a>
 
           <div class="glass static hours-card">
@@ -165,7 +165,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-grid">
-      <div><a href="index.html" class="nav-logo" style="font-size:22px;">ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
+      <div><a href="index.html" class="nav-logo" style="font-size:22px;"><img src="logo.png" class="nav-logo-img" alt="ACCESS MKT Logo"/>ACCESS<span class="dot">·</span>MKT</a><p class="footer-brand-desc">Making credit repair accessible, transparent, and expert-driven for every client.</p></div>
       <div><div class="footer-col-title">Services</div><div class="footer-col"><a href="services.html">Packages</a><a href="process.html">How It Works</a><a href="portal.html">Book Consult</a></div></div>
       <div><div class="footer-col-title">Resources</div><div class="footer-col"><a href="education.html">Education</a><a href="education.html">FAQs</a><a href="education.html">Credit Laws</a></div></div>
       <div><div class="footer-col-title">Company</div><div class="footer-col"><a href="contact.html">Contact</a><a href="portal.html">Portal</a><a href="#">Privacy</a><a href="admin.html" style="margin-top:8px;color:rgba(167,139,250,.30);font-size:12px;">Admin</a></div></div>
@@ -174,7 +174,7 @@
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function submitContact(e){
   e.preventDefault();
   const first   = document.getElementById('cf-first').value.trim();
@@ -190,17 +190,4 @@ function submitContact(e){
     name: first + ' ' + last,
     email, phone, type: 'contact',
     date: new Date().toISOString(),
-    creditLines: '', package: subject || 'General Inquiry',
-    status: 'New', round: 'N/A',
-    message: msg, notes: ''
-  };
-  const clients = JSON.parse(localStorage.getItem('access_clients') || '[]');
-  clients.unshift(record);
-  localStorage.setItem('access_clients', JSON.stringify(clients));
-
-  document.getElementById('form-view').style.display = 'none';
-  document.getElementById('success-view').style.display = 'block';
-}
-</script>
-</body>
-</html>
+    creditLines: '', package: subject || 'G
