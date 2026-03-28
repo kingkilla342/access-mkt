@@ -114,6 +114,17 @@ nav {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo-img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(139,92,246,0.55));
+  flex-shrink: 0;
 }
 
 .nav-logo .dot {
